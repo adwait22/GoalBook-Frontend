@@ -2,15 +2,19 @@ import React, { Component } from 'react';
 import "./MainPage.css";
 import Post from '../Post/Post';
 import uploadImage from "../../images/upload.png";
-// import {storage,auth} from "../firebase";
+import {storageRef,auth} from "../firebase";
+import firebase from 'firebase/compat/app';
+import { ToastContainer, toast } from 'react-toastify';
+import axios from 'axios';
+
 
 
 class MainPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            postArray: [],
             progressBar: "",
+            postArray: []
         }
     }
 
@@ -19,103 +23,153 @@ class MainPage extends Component {
     }
 
     getPost = () => { //API
-        // const thisContext=this;
-        let data = [
-            {
-                "postId": "123456",
-                "userName": "anindya",
-                "postImageURL": "https://irixlens.com/new/wp-content/uploads/2018/11/IRX_5473.jpg",
-                "timeStamp": "12345",
-                "likes": "1234"
-            },
-            {
-                "postId": "123456",
-                "userName": "anindya",
-                "postImageURL": "https://irixlens.com/new/wp-content/uploads/2018/11/IRX_5473.jpg",
-                "timeStamp": "12345",
-                "likes": "1234"
-            },
-            {
-                "postId": "123456",
-                "userName": "anindya",
-                "postImageURL": "https://irixlens.com/new/wp-content/uploads/2018/11/IRX_5473.jpg",
-                "timeStamp": "12345",
-                "likes": "1234"
-            }
-        ];
-        this.setState({ postArray: data })
-        // fetch('http://localhost:8080/post')
+        const thisContext=this;
+
+        axios.post('https://jsonplaceholder.typicode.com/posts', {
+            userId: JSON.parse(localStorage.getItem("users")).userId
+        })
+        .then(res => {
+           let mockdata =  [
+                    {
+                        "postId": "123",
+                        "username": "anindya",
+                        "imageUrl": "https://firebasestorage.googleapis.com/v0/b/goalbook-59ade.appspot.com/o/images%2Fbcd90c1d4868.png?alt=media&token=c090b6ec-d756-4488-8fab-2f53761577f9",
+                        "timeStamp": "1235",
+                        "likes": "123"
+                    },
+                    {
+                        "postId": "1456",
+                        "username": "anindya",
+                        "imageUrl": "https://firebasestorage.googleapis.com/v0/b/goalbook-59ade.appspot.com/o/images%2Fbcd90c1d4868.png?alt=media&token=c090b6ec-d756-4488-8fab-2f53761577f9",
+                        "timeStamp": "145",
+                        "likes": "134"
+                    },
+                    {
+                        "postId": "156",
+                        "username": "anindya",
+                        "imageUrl": "https://firebasestorage.googleapis.com/v0/b/goalbook-59ade.appspot.com/o/images%2Fbcd90c1d4868.png?alt=media&token=c090b6ec-d756-4488-8fab-2f53761577f9",
+                        "timeStamp": "1234",
+                        "likes": "34"
+                    }
+                ];
+            thisContext.setState({postArray: mockdata});
+        })
+        
+        // fetch('https://jsonplaceholder.typicode.com/posts', {})
         //     .then(response => response.json())
         //     .then(data => {
         //         thisContext.setState({postArray: data});
         // });
+
+        // let data = [
+        //     {
+        //         "postId": "123456",
+        //         "userName": "anindya",
+        //         "imageUrl": "https://irixlens.com/new/wp-content/uploads/2018/11/IRX_5473.jpg",
+        //         "timeStamp": "12345",
+        //         "likes": "1234"
+        //     },
+        //     {
+        //         "postId": "123456",
+        //         "userName": "anindya",
+        //         "imageUrl": "https://irixlens.com/new/wp-content/uploads/2018/11/IRX_5473.jpg",
+        //         "timeStamp": "12345",
+        //         "likes": "1234"
+        //     },
+        //     {
+        //         "postId": "123456",
+        //         "userName": "anindya",
+        //         "imageUrl": "https://irixlens.com/new/wp-content/uploads/2018/11/IRX_5473.jpg",
+        //         "timeStamp": "12345",
+        //         "likes": "1234"
+        //     }
+        // ];
+        // this.setState({ postArray: data })
     }
 
-    // upload=(event)=>{
-    //     let image=event.target.files[0];
-    //     const thisContext=this;
-    //     if(image == null || image == undefined)
-    //         return;
+    upload = event => {
 
-    //     var uploadTask = storage.ref("images").child(image.name).put(image);
-    //     uploadTask.on(
-    //       "state_changed",
-    //       function (snapshot) {
-    //         var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    //         thisContext.setState({progressBar: progress});
-    //       },
-    //       function (error) {
-    //       },
-    //       function () {
-    //         uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-    //             console.log(downloadURL);
+        const thisContext = this
 
-    //             let payload = {
-    //                 "postId": Math.floor(Math.random()*100000).toString(),
-    //                 "userId": JSON.parse(localStorage.getItem("users")).uid,
-    //                 "postPath": downloadURL,
-    //                 "timeStamp": new Date().getTime(),
-    //                 "likeCount": 0
-    //             }
+        var metadata = {
+            contentType: 'image/jpeg'
+        };
 
-    //             const requestOptions ={
-    //                 method: "POST",
-    //                 headers: { 'Content-Type': 'application/json' },
-    //                 body : JSON.stringify(payload),
-    //             }
+        let image = event.target.files[0]
 
-    //             fetch("http://localhost:8080/post",requestOptions)
-    //             .then(response => response.json())
-    //             .then(data => {
-    //                 console.log(data);
-    //                 thisContext.getPost();
-    //             })
-    //             .catch(error =>{
+        if (image == null || image == undefined) {
+            toast.error('Bad image format. Please provide a valid image')
+            return
+        }
 
-    //             })
+        var uploadTask = storageRef.child('images/' + image.name).put(image, metadata);
 
-    //         })
-    //         }
-    //     );
-    // }
+        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
+            (snapshot) => {
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                thisContext.setState({ progressBar: progress })
+            },
+            (error) => {
+                console.log(error)
+            },
+            () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    console.log('File available at', downloadURL);
+
+                    let payload = {
+                        "postId": new Date().getTime() + 1,
+                        "userId": JSON.parse(localStorage.getItem("users")).userId,
+                        "imageUrl": downloadURL,
+                        "timeStamp": new Date().getTime(),
+                        "likes": 0
+                    }
+
+                    const requestOptions = {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                    }
+
+                    fetch("https://jsonplaceholder.typicode.com/posts", requestOptions)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);
+                            thisContext.getPost();
+                        })
+                        .catch(error => {
+                            console.log(error)
+                        })
+
+                });
+            }
+        );
+    }
 
     render() {
         return (
             <div>
-                {/* <div className="mainpage__container">
-                    <div className="mainpage__divider"></div>
+                <ToastContainer/>
+
+                <div className="mainpage__container">
+
+                    <div className="mainpage__divider"></div>  
+
                     <div className="fileupload">
-                        <label for="file-upload" >
+                        <label htmlFor="file-upload" >
                             <img className="mainpage__uploadicon" src={uploadImage} />
                         </label>
                         <input onChange={this.upload} id="file-upload" type="file" />
                     </div>
+
                     <div className="mainpage__divider"></div>
-                </div> */}
+
+                </div>
+
                 <div className="upload_text">{this.state.progressBar}</div>
+
                 {
                     this.state.postArray.map((item, index) => (
-                        <Post id={item.postId} userName={item.userName} postImage={item.postImageURL} likes={item.likes} />
+                        <Post key={index} postId={item.postId} username={item.username} imageUrl={item.imageUrl} likes={item.likes} />
                     ))
                 }
             </div>

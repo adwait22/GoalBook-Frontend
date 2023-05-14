@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import "./Post.css";
 import Avatar from '@mui/material/Avatar';
-import postimage from "../../images/post.jpg";
 import love from "../../images/love.svg";
 import comment from "../../images/comment.svg";
-import share from "../../images/share.svg";
+import pp from "../../images/pp1.png"
+import axios from 'axios';
+
 
 
 class Post extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            commentList: []
+            commentList: [],
+            NoOflikes: Number(this.props.likes)
         }
     }
 
@@ -19,91 +21,121 @@ class Post extends Component {
         this.getComments();
     }
 
+    likeClick = e => {
+        e.preventDefault() 
+        axios.post('https://jsonplaceholder.typicode.com/posts' , {
+            post_id: this.props.postId,
+            user_id: this.props.userId
+        })
+        .then(res => {
+            if(res.data) {
+                this.setState({
+                    NoOflikes: Number(this.state.NoOflikes) + 1
+                })
+            }
+            else {
+                this.setState({
+                    NoOflikes: Number(this.state.NoOflikes) - 1
+                })
+            }
+            
+        })
+    }
+
     getComments = () => { //API backend
-        let data = [
+        let mockdata = [
             {
                 "username": "ASD",
                 "commentId": "1234",
                 "timeStamp": "123456",
-                "description": "Comment 1"
+                "comment": "Comment 1"
             },
             {
                 "username": "anindya",
                 "commentId": "1234",
                 "timeStamp": "123456",
-                "description": "Comment 2"
+                "comment": "Comment 2"
             },
             {
                 "username": "dasgupta",
                 "commentId": "1234",
                 "timeStamp": "123456",
-                "description": "Comment 3"
+                "comment": "Comment 3"
             }
         ];
-        this.setState({ commentList: data })
+        // this.setState({ commentList: data })
 
-        // fetch('http://localhost:8080/comments/'+this.props.id)
+        // +this.props.id
+        // fetch('https://jsonplaceholder.typicode.com/posts/')
         //     .then(response => response.json())
         //     .then(data => {
-        //         this.setState({commentList: data});
-        // });
+        //         this.setState({ commentList: data });
+        //     });
+      
+        axios.post('https://jsonplaceholder.typicode.com/posts/', {
+            postId: this.props.postId
+        })
+        .then(res => {
+            this.setState({ commentList: mockdata });
+        })
 
     }
 
-    // submitComments =(event) =>{
-    //     if(event.key == "Enter") {
-    //         let comment=event.currentTarget.value;
-    //         if(comment!= null || comment!=undefined) {
+    submitComments = (event) => {
+        if (event.key == "Enter") {
 
-    //             let payload = {
-    //                 "commentId": Math.floor(Math.random()*1000000).toString(),
-    //                 "userId": JSON.parse(localStorage.getItem("users")).uid,
-    //                 "postId": this.props.id,
-    //                 "timeStamp": new Date().getTime(),
-    //                 "comment": comment
-    //             }
+            let comment = event.currentTarget.value;
 
-    //             const requestOptions ={
-    //                 method: "POST",
-    //                 headers: { 'Content-Type': 'application/json' },
-    //                 body : JSON.stringify(payload),
-    //             }
+            if (comment != null || comment != undefined) {
 
-    //             fetch("http://localhost:8080/comments",requestOptions)
-    //             .then(response => response.json())
-    //             .then(data => {
-    //                 this.getComments();
-    //             })
-    //             .catch(error =>{
+                let payload = {
+                    "commentId": new Date().getTime() + 1,
+                    "userId": JSON.parse(localStorage.getItem("users")).uid,
+                    "postId": this.props.postId,
+                    "timeStamp": new Date().getTime(),
+                    "comment": comment
+                }
 
-    //             })
+                const requestOptions = {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                }
 
-    //         }
-    //     }
-    // }
+                fetch("https://jsonplaceholder.typicode.com/posts", requestOptions)
+                    .then(response => response.json())
+                    .then(data => {
+                        this.getComments();
+                    })
+                    .catch(error => {
+
+                    })
+
+            }
+        }
+    }
 
     render() {
         return (
             <div className="post__container">
                 {/* Header */}
                 <div className="post__header">
-                    <Avatar className="post__image" src="" />
-                    <div className="post__username">{this.props.userName}</div>
+                    <Avatar className="post__image" src={pp} />
+                    <div className="post__username">{this.props.username}</div>
                 </div>
 
                 {/* Image */}
                 <div>
-                    <img src={this.props.postImage} width="615px" />
+                    <img src={this.props.imageUrl} width="615px" />
                 </div>
 
                 {/* Analytics */}
                 <div>
-                    <div style={{ "marginLeft": "10px" }}>
+                    <div style={{ "marginLeft": "10px" }} onClick={this.likeClick}>
                         <img src={love} className="post_reactimage" />
-                        <img src={comment} className="post_reactimage" />
                     </div>
                     <div style={{ "fontWeight": "bold", "marginLeft": "20px  " }}>
-                        {this.props.likes} likes
+                        {this.state.NoOflikes} likes
                     </div>
                 </div>
 
@@ -111,11 +143,12 @@ class Post extends Component {
                 <div>
                     {
                         this.state.commentList.map((item, index) => (
-                            index < 4 ?
-                                <div className="post_comment">{item.username}: {item.description}</div> : <span></span>
+
+                            <div key={index} className="post_comment">{item.username}: {item.comment}</div>
+
                         ))
                     }
-                    <input text="text" onKeyPress={this.submitComments} className="post__commentbox" placeholder="Add a comment..." />
+                    <input text="text" onKeyPress={this.submitComments} className="post__commentbox" placeholder="Add a comment and press Enter..." />
                 </div>
 
             </div>

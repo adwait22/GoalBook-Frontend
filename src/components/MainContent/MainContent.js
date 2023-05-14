@@ -19,10 +19,7 @@ class MainContent extends Component {
                             <MainPage />
                         </div>
                     </Grid>
-                    {/* <Grid item xs={2}>
-                        <InfoSection />
-                    </Grid>
-                    <Grid item xs={2}></Grid> */}
+                    
                 </Grid>
             </div>
         );

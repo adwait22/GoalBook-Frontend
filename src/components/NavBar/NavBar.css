@@ -21,3 +21,24 @@
     background-color: #fafafa;
     border-radius: 5px;
 }
+.fileupload > input {
+    display: none;
+}
+.mainpage__uploadicon {
+    height: 50px;
+    width: 50px;
+}
+.searchScreen {
+    position: absolute;
+    /* top: 100%; */
+    /* left: 0; */
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 200px;
+    max-width: 400px;
+    z-index: 1;
+}

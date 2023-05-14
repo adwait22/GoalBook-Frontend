@@ -25,8 +25,7 @@ class LoginPage extends Component {
         return (
             <div>
                 <Grid container>
-                    <Grid item xs={3}>
-                    </Grid>
+                    <Grid item xs={3}> </Grid>
                     <Grid item xs={6}>
                         <div className="loginpage__main">
                             <div>
@@ -59,8 +58,7 @@ class LoginPage extends Component {
                             </div>
                         </div>
                     </Grid>
-                    <Grid item xs={3}>
-                    </Grid>
+                    <Grid item xs={3}></Grid>
                 </Grid>
             </div>
         );
