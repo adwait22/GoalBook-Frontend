@@ -23,9 +23,9 @@ class Post extends Component {
 
     likeClick = e => {
         e.preventDefault() 
-        axios.post('https://jsonplaceholder.typicode.com/posts' , {
+        axios.post('http://localhost:9090/get-like' , {
             post_id: this.props.postId,
-            user_id: this.props.userId
+            user_id: JSON.parse(localStorage.getItem("users")).userId
         })
         .then(res => {
             if(res.data) {
@@ -43,26 +43,26 @@ class Post extends Component {
     }
 
     getComments = () => { //API backend
-        let mockdata = [
-            {
-                "username": "ASD",
-                "commentId": "1234",
-                "timeStamp": "123456",
-                "comment": "Comment 1"
-            },
-            {
-                "username": "anindya",
-                "commentId": "1234",
-                "timeStamp": "123456",
-                "comment": "Comment 2"
-            },
-            {
-                "username": "dasgupta",
-                "commentId": "1234",
-                "timeStamp": "123456",
-                "comment": "Comment 3"
-            }
-        ];
+        // let mockdata = [
+        //     {
+        //         "username": "ASD",
+        //         "commentId": "1234",
+        //         "timeStamp": "123456",
+        //         "comment": "Comment 1"
+        //     },
+        //     {
+        //         "username": "anindya",
+        //         "commentId": "1234",
+        //         "timeStamp": "123456",
+        //         "comment": "Comment 2"
+        //     },
+        //     {
+        //         "username": "dasgupta",
+        //         "commentId": "1234",
+        //         "timeStamp": "123456",
+        //         "comment": "Comment 3"
+        //     }
+        // ];
         // this.setState({ commentList: data })
 
         // +this.props.id
@@ -72,11 +72,11 @@ class Post extends Component {
         //         this.setState({ commentList: data });
         //     });
       
-        axios.post('https://jsonplaceholder.typicode.com/posts/', {
-            postId: this.props.postId
+        axios.post('http://localhost:9090/get-comment', {
+            post_id: this.props.postId
         })
         .then(res => {
-            this.setState({ commentList: mockdata });
+            this.setState({ commentList: res.data });
         })
 
     }
@@ -90,9 +90,8 @@ class Post extends Component {
 
                 let payload = {
                     "commentId": new Date().getTime() + 1,
-                    "userId": JSON.parse(localStorage.getItem("users")).uid,
-                    "postId": this.props.postId,
-                    "timeStamp": new Date().getTime(),
+                    "user_id": JSON.parse(localStorage.getItem("users")).userId,
+                    "post_id": this.props.postId,
                     "comment": comment
                 }
 
@@ -102,7 +101,7 @@ class Post extends Component {
                     body: JSON.stringify(payload),
                 }
 
-                fetch("https://jsonplaceholder.typicode.com/posts", requestOptions)
+                fetch("http://localhost:9090/comment-on-post", requestOptions)
                     .then(response => response.json())
                     .then(data => {
                         this.getComments();
@@ -144,11 +143,11 @@ class Post extends Component {
                     {
                         this.state.commentList.map((item, index) => (
 
-                            <div key={index} className="post_comment">{item.username}: {item.comment}</div>
+                            <div key={index} className="post_comment"><span style={{ "fontWeight": "bold" }}>{item.user.userName}: </span>{item.comment}</div>
 
                         ))
                     }
-                    <input text="text" onKeyPress={this.submitComments} className="post__commentbox" placeholder="Add a comment and press Enter..." />
+                    <input type="text" onKeyPress={this.submitComments} className="post__commentbox" placeholder="Add a comment and press Enter..." />
                 </div>
 
             </div>

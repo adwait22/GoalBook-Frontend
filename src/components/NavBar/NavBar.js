@@ -32,26 +32,17 @@ class NavBar extends Component {
             if (query != null || query != undefined) {
 
                 let payload = {
-                    userId: JSON.parse(localStorage.getItem("users")).userId,
-                    query: query
+                    name: query
                 }
 
-                let payload2 = {
-                    friendUsername: 'kailash',
-                    isFriend: false,
-                    friendId: '213525'
-                }
-
-                // console.log(payload)
-
-                axios.post('https://jsonplaceholder.typicode.com/posts', payload2)
+                axios.post('http://localhost:9090/search', payload)
                     .then(res => {
                         if (res.data !== {}) {
                             console.log('inside axios')
                             this.setState({
-                                friendUsername: res.data.friendUsername,
+                                friendUsername: res.data.userName,
                                 isFriend: res.data.isFriend,
-                                friendId: res.data.friendId,
+                                friendId: res.data.id,
                                 searchBoxOpen: true
                             }, () => {
                                 console.log(this.state)
@@ -65,9 +56,9 @@ class NavBar extends Component {
     }
 
     addFriend = e => {
-        axios.post('https://jsonplaceholder.typicode.com/posts', {
-            userId: JSON.parse(localStorage.getItem("users")).userId,
-            friendId: this.state.friendId
+        axios.post('http://localhost:9090/add-friend', {
+            user_id1: JSON.parse(localStorage.getItem("users")).userId,
+            user_id2: this.state.friendId
         })
             .then(res => {
                 this.setState({
@@ -96,10 +87,10 @@ class NavBar extends Component {
                         </Grid>
 
                         <Grid item xs={4}>
-                            <input text="text" className="navbar__searchBar" placeholder="Search" onKeyPress={this.searchHandler} />
+                            <input type="text" className="navbar__searchBar" placeholder="Search" onKeyPress={this.searchHandler} />
                             {this.state.searchBoxOpen &&
                                 <div className='searchScreen'>
-                                    <p>{this.state.friendUsername} <span><img onClick={this.addFriend} className="mainpage__uploadicon" src={uploadImage} /></span> </p>
+                                    <p>{this.state.friendUsername} {this.state.isFriend && <span><img onClick={this.addFriend} className="mainpage__uploadicon" src={uploadImage} /></span>} </p>
                                 </div>
                             }
                         </Grid>

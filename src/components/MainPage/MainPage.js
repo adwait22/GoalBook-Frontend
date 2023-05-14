@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "./MainPage.css";
 import Post from '../Post/Post';
 import uploadImage from "../../images/upload.png";
-import {storageRef,auth} from "../firebase";
+import { storageRef, auth } from "../firebase";
 import firebase from 'firebase/compat/app';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
@@ -14,7 +14,10 @@ class MainPage extends Component {
         super(props);
         this.state = {
             progressBar: "",
-            postArray: []
+            postArray: [],
+            goal: '',
+            duration: '',
+            goalAddBoxOpen: false
         }
     }
 
@@ -23,38 +26,38 @@ class MainPage extends Component {
     }
 
     getPost = () => { //API
-        const thisContext=this;
+        const thisContext = this;
 
-        axios.post('https://jsonplaceholder.typicode.com/posts', {
-            userId: JSON.parse(localStorage.getItem("users")).userId
+        axios.post('http://localhost:9090/get-all-post', {
+            user_id: JSON.parse(localStorage.getItem("users")).userId
         })
-        .then(res => {
-           let mockdata =  [
-                    {
-                        "postId": "123",
-                        "username": "anindya",
-                        "imageUrl": "https://firebasestorage.googleapis.com/v0/b/goalbook-59ade.appspot.com/o/images%2Fbcd90c1d4868.png?alt=media&token=c090b6ec-d756-4488-8fab-2f53761577f9",
-                        "timeStamp": "1235",
-                        "likes": "123"
-                    },
-                    {
-                        "postId": "1456",
-                        "username": "anindya",
-                        "imageUrl": "https://firebasestorage.googleapis.com/v0/b/goalbook-59ade.appspot.com/o/images%2Fbcd90c1d4868.png?alt=media&token=c090b6ec-d756-4488-8fab-2f53761577f9",
-                        "timeStamp": "145",
-                        "likes": "134"
-                    },
-                    {
-                        "postId": "156",
-                        "username": "anindya",
-                        "imageUrl": "https://firebasestorage.googleapis.com/v0/b/goalbook-59ade.appspot.com/o/images%2Fbcd90c1d4868.png?alt=media&token=c090b6ec-d756-4488-8fab-2f53761577f9",
-                        "timeStamp": "1234",
-                        "likes": "34"
-                    }
-                ];
-            thisContext.setState({postArray: mockdata});
-        })
-        
+            .then(res => {
+                //    let mockdata =  [
+                //             {
+                //                 "postId": "123",
+                //                 "username": "anindya",
+                //                 "imageUrl": "https://firebasestorage.googleapis.com/v0/b/goalbook-59ade.appspot.com/o/images%2Fbcd90c1d4868.png?alt=media&token=c090b6ec-d756-4488-8fab-2f53761577f9",
+                //                 "timeStamp": "1235",
+                //                 "likes": "123"
+                //             },
+                //             {
+                //                 "postId": "1456",
+                //                 "username": "anindya",
+                //                 "imageUrl": "https://firebasestorage.googleapis.com/v0/b/goalbook-59ade.appspot.com/o/images%2Fbcd90c1d4868.png?alt=media&token=c090b6ec-d756-4488-8fab-2f53761577f9",
+                //                 "timeStamp": "145",
+                //                 "likes": "134"
+                //             },
+                //             {
+                //                 "postId": "156",
+                //                 "username": "anindya",
+                //                 "imageUrl": "https://firebasestorage.googleapis.com/v0/b/goalbook-59ade.appspot.com/o/images%2Fbcd90c1d4868.png?alt=media&token=c090b6ec-d756-4488-8fab-2f53761577f9",
+                //                 "timeStamp": "1234",
+                //                 "likes": "34"
+                //             }
+                //         ];
+                thisContext.setState({ postArray: res.data });
+            })
+
         // fetch('https://jsonplaceholder.typicode.com/posts', {})
         //     .then(response => response.json())
         //     .then(data => {
@@ -117,11 +120,11 @@ class MainPage extends Component {
                     console.log('File available at', downloadURL);
 
                     let payload = {
-                        "postId": new Date().getTime() + 1,
-                        "userId": JSON.parse(localStorage.getItem("users")).userId,
-                        "imageUrl": downloadURL,
-                        "timeStamp": new Date().getTime(),
-                        "likes": 0
+                        "post_id": new Date().getTime() + 1,
+                        "user_id": JSON.parse(localStorage.getItem("users")).userId,
+                        "url": downloadURL,
+                        duration: this.state.duration,
+                        goal: this.state.goal
                     }
 
                     const requestOptions = {
@@ -130,7 +133,7 @@ class MainPage extends Component {
                         body: JSON.stringify(payload),
                     }
 
-                    fetch("https://jsonplaceholder.typicode.com/posts", requestOptions)
+                    fetch("http://localhost:9090/create-post", requestOptions)
                         .then(response => response.json())
                         .then(data => {
                             console.log(data);
@@ -148,11 +151,14 @@ class MainPage extends Component {
     render() {
         return (
             <div>
-                <ToastContainer/>
+                <ToastContainer />
 
                 <div className="mainpage__container">
 
-                    <div className="mainpage__divider"></div>  
+                    <input type='text' style={{ display: 'block' }} onChange={(event) => { this.state.goal = event.currentTarget.value }} placeholder='Enter Goal' />
+                    <input type='text' style={{ display: 'block' }} onChange={(event) => { this.state.duration = event.currentTarget.value }} placeholder='Enter Goal deadline in Days' />
+
+                    <div className="mainpage__divider"></div>
 
                     <div className="fileupload">
                         <label htmlFor="file-upload" >
@@ -169,7 +175,14 @@ class MainPage extends Component {
 
                 {
                     this.state.postArray.map((item, index) => (
-                        <Post key={index} postId={item.postId} username={item.username} imageUrl={item.imageUrl} likes={item.likes} />
+                        <Post
+                            key={index}
+                            postId={item.post_id}
+                            username={item.user.userName}
+                            imageUrl={item.pic}
+                            likes={item.likes} 
+                            goal={item.goal}
+                            duration={item.duration} />
                     ))
                 }
             </div>

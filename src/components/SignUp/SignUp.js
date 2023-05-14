@@ -41,7 +41,7 @@ class SignUp extends Component {
                     body: JSON.stringify(payload),
                 }
 
-                fetch("http://localhost:8080/register", requestOptions)
+                fetch("http://localhost:9090/register", requestOptions)
                     .then(response => response.json())
                     .then(data => {
                         console.log(data)

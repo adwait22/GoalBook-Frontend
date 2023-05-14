@@ -31,21 +31,21 @@ class SignIn extends Component {
 
 
 
-                axios.post('https://jsonplaceholder.typicode.com/posts', {
-                    userId: user.uid
+                axios.post('http://localhost:9090/login', {
+                    user_id: user.uid
                 })
-                    .then(r => {
+                    .then(res => {
                         // ---------------------FOR API TESTING START---------------------
 
-                        let res = {
-                            name: 'test-mock',
-                            username: 'hero-test'
-                        }
+                        // let res = {
+                        //     name: 'test-mock',
+                        //     username: 'hero-test'
+                        // }
 
                         // ---------------------FOR API TESTING END---------------------
                         payload = {
                             "userId": user.uid,
-                            "username": res.username,
+                            "username": res.userName,
                             "name": res.name,
                             "profileImage": ""
                         }
