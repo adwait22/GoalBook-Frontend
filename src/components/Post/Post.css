@@ -43,3 +43,24 @@
     font-size: 16px;
     padding-left: 10px;
 }
+.likeCounterDiv:hover{
+    cursor: pointer;
+}
+.likeList {
+    margin: 10px;
+}
+.hoverLikeList {
+    position: absolute;
+    /* top: 100%; */
+    /* left: 0; */
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 200px;
+    max-width: 400px;
+    z-index: 1;
+}
