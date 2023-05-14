@@ -25,10 +25,13 @@ class SignUp extends Component {
                 var user = userCredential.user;
 
                 let payload = {
-                    "userId": user.uid,
+                    "user_id": user.uid,
                     "username": this.state.username,
                     "name": this.state.name,
-                    "profileImage": ""
+                    "url": "",
+                    password: null,
+                    email: null,
+                    dob: null
                 }
                 console.log(userCredential.user)
 
@@ -38,7 +41,7 @@ class SignUp extends Component {
                     body: JSON.stringify(payload),
                 }
 
-                fetch("https://jsonplaceholder.typicode.com/posts", requestOptions)
+                fetch("http://localhost:8080/register", requestOptions)
                     .then(response => response.json())
                     .then(data => {
                         console.log(data)
