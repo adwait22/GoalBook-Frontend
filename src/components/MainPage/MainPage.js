@@ -28,7 +28,7 @@ class MainPage extends Component {
     getPost = () => { //API
         const thisContext = this;
 
-        axios.get('http://localhost:9090/getAllPost', {
+        axios.post('http://localhost:9090/get-all-post', {
             user_id: JSON.parse(localStorage.getItem("users")).userId
         })
             .then(res => {
@@ -122,11 +122,11 @@ class MainPage extends Component {
                     let payload = {
                         "post_id": new Date().getTime() + 1,
                         "user_id": JSON.parse(localStorage.getItem("users")).userId,
-                        "url": downloadURL,
+                        "pic": downloadURL,
                         duration: this.state.duration,
                         goal: this.state.goal
                     }
-
+                    
                     const requestOptions = {
                         method: "POST",
                         headers: { 'Content-Type': 'application/json' },
@@ -153,21 +153,24 @@ class MainPage extends Component {
             <div>
                 <ToastContainer />
 
-                <div className="mainpage__container">
+                <div className="mainpage__container1">
 
-                    <input type='text' style={{ display: 'block' }} onChange={(event) => { this.state.goal = event.currentTarget.value }} placeholder='Enter Goal' />
-                    <input type='text' style={{ display: 'block' }} onChange={(event) => { this.state.duration = event.currentTarget.value }} placeholder='Enter Goal deadline in Days' />
+                    <input type='text' id='goalSelector' style={{ display: 'block' }} onChange={(event) => { this.state.goal = event.currentTarget.value }} placeholder='Enter Goal' />
+                    <input type='text' id='durationSelector' style={{ display: 'block' }} onChange={(event) => { this.state.duration = event.currentTarget.value }} placeholder='Enter Goal deadline in Days' />
+                   
+                    <div className="mainpage__container2">
+                        <div className="mainpage__divider"></div>
 
-                    <div className="mainpage__divider"></div>
+                        <div className="fileupload">
+                            <label htmlFor="file-upload" >
+                                <img className="mainpage__uploadicon" src={uploadImage} />
+                            </label>
+                            <input onChange={this.upload} id="file-upload" type="file" />
+                        </div>
 
-                    <div className="fileupload">
-                        <label htmlFor="file-upload" >
-                            <img className="mainpage__uploadicon" src={uploadImage} />
-                        </label>
-                        <input onChange={this.upload} id="file-upload" type="file" />
+                        <div className="mainpage__divider"></div>
                     </div>
 
-                    <div className="mainpage__divider"></div>
 
                 </div>
 
@@ -178,9 +181,9 @@ class MainPage extends Component {
                         <Post
                             key={index}
                             postId={item.post_id}
-                            username={item.user.userName}
+                            username={item.user.username}
                             imageUrl={item.pic}
-                            likes={item.likes} 
+                            likes={item.likes}
                             goal={item.goal}
                             duration={item.duration} />
                     ))

@@ -8,16 +8,32 @@
     border: 1px solid #dbdbdb;
     margin-top: 40px;
 }
-.mainpage__container {
+.mainpage__container1 {
+    text-align: center;
+    margin: 0px 10px 0px 20px;
+    display :flex ;
+    flex-direction: column;
+    justify-content: center ;
+    align-items: center;
+}   
+.mainpage__container2 {
     text-align: center;
     margin: 0px 10px 0px -20px;
     display :flex ;
     justify-content: center ;
-}   
+}  
 .fileupload > input {
     display: none;
+}
+.mainpage__uploadicon:hover {
+    cursor: pointer;
 }
 .upload_text {
     text-align: center;
     margin-left: -25px;
+}
+#goalSelector, #durationSelector {
+    width: 400px;
+    margin-top: 10px;
+    height: 50px;
 }

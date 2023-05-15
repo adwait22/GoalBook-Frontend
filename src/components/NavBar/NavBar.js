@@ -9,6 +9,7 @@ import home from "../../images/home.svg";
 import Avatar from '@mui/material/Avatar';
 import pp from "../../images/pp1.png"
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 
 class NavBar extends Component {
     constructor(props) {
@@ -17,7 +18,8 @@ class NavBar extends Component {
             searchBoxOpen: false,
             friendUsername: '',
             isFriend: false,
-            friendId: ''
+            friendId: '',
+            friendList: []
         }
     }
 
@@ -27,38 +29,35 @@ class NavBar extends Component {
 
             let query = e.currentTarget.value;
 
-            console.log(query)
-
             if (query != null || query != undefined) {
 
                 let payload = {
-                    name: query
+                    name: query,
+                    user_id: JSON.parse(localStorage.getItem("users")).userId
                 }
-
-                axios.post('http://localhost:9090/search', payload)
+                e.currentTarget.value = ''
+                axios.post('http://localhost:9090/Search', payload)
                     .then(res => {
-                        if (res.data !== {}) {
-                            console.log('inside axios')
+                        if (res.data.length !== 0) {
                             this.setState({
-                                friendUsername: res.data.userName,
-                                isFriend: res.data.isFriend,
-                                friendId: res.data.id,
+                                friendList: res.data,
                                 searchBoxOpen: true
                             }, () => {
-                                console.log(this.state)
+                                console.log(this.state.friendList)
                             })
-
                         }
+                        else 
+                        toast.error('No friend found with this name')
                     })
             }
 
         }
     }
 
-    addFriend = e => {
-        axios.post('http://localhost:9090/add-friend', {
+    addFriend = friendId => {
+        axios.post('http://localhost:9090/friend-request', {
             user_id1: JSON.parse(localStorage.getItem("users")).userId,
-            user_id2: this.state.friendId
+            user_id2: friendId
         })
             .then(res => {
                 this.setState({
@@ -68,13 +67,20 @@ class NavBar extends Component {
     }
 
     logOut = e => {
+        localStorage.removeItem("users");
+        window.location.reload();
+    }
 
+    likeListClose = e => {
+        this.setState({
+            searchBoxOpen: false
+        })
     }
 
     render() {
         return (
             <div>
-
+                <ToastContainer />
                 <div className="navbar__barContent">
                     <Grid container>
 
@@ -88,12 +94,22 @@ class NavBar extends Component {
 
                         <Grid item xs={4}>
                             <input type="text" className="navbar__searchBar" placeholder="Search" onKeyPress={this.searchHandler} />
+
                             {this.state.searchBoxOpen &&
                                 <div className='searchScreen'>
-                                    <p>{this.state.friendUsername} {this.state.isFriend ?
-                                        <span><svg height='50px' width='50px' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg></span>
-                                        : <span><img onClick={this.addFriend} className="mainpage__uploadicon" src={uploadImage} /></span>
-                                    } </p>
+                                    <svg onClick={this.likeListClose} height='25px' width='25px' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" /></svg>
+
+                                    {
+                                        this.state.friendList.map((item, index) => (
+                                            <p key={index}>
+                                                {item.username}
+                                                {(item.isfriend === '1') ?
+                                                    <span></span>
+                                                    : <span><img onClick={() => this.addFriend(item.user_id)} className="mainpage__uploadicon" src={uploadImage} alt='ok'/></span>
+                                                } 
+                                            </p>
+                                        ))
+                                    }
                                 </div>
                             }
                         </Grid>
