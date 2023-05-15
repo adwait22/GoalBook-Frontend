@@ -28,7 +28,7 @@ class MainPage extends Component {
     getPost = () => { //API
         const thisContext = this;
 
-        axios.post('http://localhost:9090/get-all-post', {
+        axios.get('http://localhost:9090/getAllPost', {
             user_id: JSON.parse(localStorage.getItem("users")).userId
         })
             .then(res => {

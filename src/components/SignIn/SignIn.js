@@ -17,37 +17,24 @@ class SignIn extends Component {
 
     login = () => {
 
-        // localStorage.setItem("users","admin");
-        // window.location.reload();
-
         auth.signInWithEmailAndPassword(this.state.emailId, this.state.password)
 
             .then((userCredential) => {
 
                 var user = userCredential.user;
-                let payload = {}
 
                 console.log(user)
 
-
-
                 axios.post('http://localhost:9090/login', {
-                    user_id: user.uid
+                    userId: user.uid
                 })
                     .then(res => {
-                        // ---------------------FOR API TESTING START---------------------
 
-                        // let res = {
-                        //     name: 'test-mock',
-                        //     username: 'hero-test'
-                        // }
-
-                        // ---------------------FOR API TESTING END---------------------
-                        payload = {
-                            "userId": user.uid,
-                            "username": res.userName,
-                            "name": res.name,
-                            "profileImage": ""
+                        let payload = {
+                            userId: user.uid,
+                            username: res.data.username,
+                            name: res.data.name,
+                            url: res.data.url
                         }
                         localStorage.setItem("users", JSON.stringify(payload));
 
@@ -56,9 +43,6 @@ class SignIn extends Component {
                     .catch(e => {
                         console.log(e)
                     })
-
-
-
             })
             .catch((error) => {
                 toast.error(`${error.message}`);

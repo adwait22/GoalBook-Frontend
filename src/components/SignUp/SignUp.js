@@ -25,13 +25,13 @@ class SignUp extends Component {
                 var user = userCredential.user;
 
                 let payload = {
-                    "user_id": user.uid,
-                    "username": this.state.username,
-                    "name": this.state.name,
-                    "url": "",
-                    password: null,
-                    email: null,
-                    dob: null
+                    user_id: user.uid,
+                    username: this.state.username,
+                    name: this.state.name,
+                    url: '',
+                    password: '',
+                    email: '',
+                    dob: ''
                 }
                 console.log(userCredential.user)
 
@@ -45,6 +45,7 @@ class SignUp extends Component {
                     .then(response => response.json())
                     .then(data => {
                         console.log(data)
+                        console.log('success')
                     })
                     .catch(error => {
                         console.log(error)
