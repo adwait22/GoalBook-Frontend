@@ -1,0 +1,26 @@
+---
+- name: Docker Pull and Run
+  hosts: all
+  tasks:
+      
+    - name: copy docker-compose file
+      copy:
+        src: ./docker-compose.yml
+        dest: ./
+
+    - name: remove containers using docker-compose
+      command: docker-compose down 
+      
+
+    - name: Remove spring existing image 
+      docker_image:
+        name: chinmayrk9/goalbook
+        state: absent  
+    - name: Remove react existing image 
+      docker_image:
+        name: adwait2210/goalbookfe:latest
+        state: absent
+    - name: Create containers using docker-compose
+      command: docker-compose up -d
+      
+        
